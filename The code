@@ -1,0 +1,282 @@
+import random
+
+yd = 0
+y1d = 0
+ad = 0
+bd = 0
+
+a = 0
+b = 0
+y = 0
+y1 = 0
+
+Cartera = 5000
+Mao_player = []
+Mao_dealer = []
+x = 0
+Deck = [2, 3, 4, 5, 6, 7, 8, 9, 10, 'A', 'Q', 'J', 'K']
+
+
+class Player1(object):
+    def __init__(self, card1=0, card2=0):
+        card1 = random.choice(Deck)
+        card2 = random.choice(Deck)
+        Player1.card1 = card1
+        Player1.card2 = card2
+        Mao_player.append(Player1.card1)
+        Mao_player.append(Player1.card2)
+
+    def Aposta(self):
+        global Cartera
+        global x
+        x = int(input('quanto você deseja apostar? (seu crédito é de '+'\033[31m'+'{}'.format(Cartera)+'\033[0;0m'+')'))
+        if x > Cartera:
+            Jog1.Aposta()
+        else:
+            Cartera -= x
+        print('Agora sua carteira tem '+'\033[31m'+'{}'.format(Cartera)+'\033[0;0m'+'\n')
+        Jog1.Jogo()
+
+    def Double_Down(self, finalcard=random.choice(Deck)):
+        global Cartera
+        global x
+        Player1.finalcard = finalcard
+        Cartera -= x
+        x *= 2
+        Mao_player.append(finalcard)
+        print('Sua mão agora é '+'\033[31m'+'{}'.format(Mao_player)+'\033[0;0m')
+        print('Sua carteira agora é '+'\033[31m'+'{}'.format(Cartera)+'\033[0;0m')
+        Jog1.Conta_player()
+        if y > 21 and (y1 > 21 or y1 == 0):
+            print('VOCÊ PERDEU')
+            x = 0
+            Jog1.Aposta()
+        print('\n')
+
+    def Surrender(self):
+        global Cartera
+        global x
+        Cartera += (x / 2)
+        print('Sua carteira agora é '+'\033[31m'+'{:.0f}'.format(Cartera)+'\033[0;0m')
+        print('A mão do dealer era '+'\033[31m'+'{}'.format(Mao_dealer)+'\033[0;0m')
+        Jog1.Aposta()
+
+    def Stand(self):
+        print('Você decidiu não alterar a sua mão\n')
+
+    def Conta_player(self):
+        global y1
+        global a
+        global b
+        global y
+        y1 = 0
+        a = 0
+        b = 0
+        y = 0
+        for i in range(len(Mao_player)):
+            val = Mao_player[i]
+            if val == 'A':
+                a += 1
+                b += 11
+                continue
+            elif val == 2 or \
+                    val == 3 or \
+                    val == 4 or \
+                    val == 5 or \
+                    val == 6 or \
+                    val == 7 or \
+                    val == 8 or \
+                    val == 9 or \
+                    val == 10:
+                y += val
+            elif val == 'Q' or \
+                    val == 'K' or \
+                    val == 'J':
+                val = 10
+                y += val
+        if b >= 11:
+            y1 = y
+            y += b
+            y1 += a
+            print('A soma da sua mão é '+'\033[31m'+'{}'.format(y)+'\033[0;0m'+' ou '+'\033[31m'+'{}'.format(y1) +
+                  '\033[0;0m')
+        else:
+            print('A soma da sua mão é '+'\033[31m'+'{}'.format(y)+'\033[0;0m')
+
+
+
+    def Conta_dealer(self):
+        global yd
+        global y1d
+        global ad
+        global bd
+        yd = 0
+        y1d = 0
+        ad = 0
+        bd = 0
+        for i in range(len(Mao_dealer)):
+            vald = Mao_dealer[i]
+            if vald == 'A':
+                ad += 1
+                bd += 11
+                continue
+            elif vald == 2 or \
+                    vald == 3 or \
+                    vald == 4 or \
+                    vald == 5 or \
+                    vald == 6 or \
+                    vald == 7 or \
+                    vald == 8 or \
+                    vald == 9 or \
+                    vald == 10:
+                yd += vald
+            elif vald == 'Q' or \
+                    vald == 'K' or \
+                    vald == 'J':
+                vald = 10
+                yd += vald
+        if bd >= 11:
+            y1d = yd
+            yd += bd
+            y1d += ad
+            print('A soma da mão do dealer é '+'\033[31m'+'{}'.format(yd)+'\033[0;0m'+' ou '+'\033[31m'+'{}'.format(y1d)
+                  + '\033[0;0m')
+        else:
+            print('A soma da mão do dealer é '+'\033[31m'+'{}'.format(yd)+'\033[0;0m')
+
+
+
+    def Check_Win(self):
+        global Cartera
+        global x
+        print('A mão do dealer é '+'\033[31m'+'{}'.format(Mao_dealer)+'\033[0;0m')
+        Jog1.Conta_dealer()
+        print('\n')
+        if yd < 17 and y1d == 0:
+            Jog1.hit_dealer()
+        if 0 < y1d < 17 and yd < 17:
+            Jog1.hit_dealer()
+        Jog1.Conta_player()
+        if y > 21 and y1 > 21:
+            print('ACABOU, O DEALER VENCEU')
+            x = 0
+            Jog1.Aposta()
+        if yd > 21 and (y1d > 21 or y1d == 0):
+            print('VOCÊ VENCEU')
+            Cartera += x*2
+            x = 0
+            Jog1.Aposta()
+        if y == yd:
+            print('EMPATE')
+            Cartera += x
+            Jog1.Aposta()
+        if 21 >= y > y1:
+            if 21 >= yd > y1d:
+                if y > yd:
+                    print('VOCÊ VENCEU y > yd')
+                    Cartera += x*2
+                    x = 0
+                    Jog1.Aposta()
+                elif y == yd:
+                    print('EMPATE y == yd')
+                    Cartera += x
+                    Jog1.Aposta()
+                else:
+                    print('VOCÊ PERDEU y > yd')
+                    x = 0
+                    Jog1.Aposta()
+            elif 21 >= y1d > yd:
+                if y > y1d:
+                    print('VOCÊ VENCEU y > y1d')
+                    Cartera += x * 2
+                    x = 0
+                    Jog1.Aposta()
+                elif y == y1d:
+                    print('EMPATE y == y1d')
+                    Cartera += x
+                    Jog1.Aposta()
+                else:
+                    print('VOCÊ PERDEU y > y1d')
+                    x = 0
+                    Jog1.Aposta()
+        elif 21 >= y1 > y:
+            if 21 >= yd > y1d:
+                if y1 > yd:
+                    print('VOCÊ VENCEU y1 > yd')
+                    Cartera += x*2
+                    x = 0
+                    Jog1.Aposta()
+                elif y1 == yd:
+                    print('EMPATE y1 == yd')
+                    Cartera += x
+                    Jog1.Aposta()
+                else:
+                    print('VOCÊ PERDEU y1 > yd')
+                    x = 0
+                    Jog1.Aposta()
+            elif 21 >= y1d > yd:
+                if y1 > y1d:
+                    print('VOCÊ VENCEU y1 > y1d')
+                    Cartera += x * 2
+                    x = 0
+                    Jog1.Aposta()
+                elif y1 == y1d:
+                    print('EMPATE y1 == y1d')
+                    Cartera += x
+                    Jog1.Aposta()
+                else:
+                    print('VOCÊ PERDEU y1 > y1d')
+                    x = 0
+                    Jog1.Aposta()
+        elif 21 < y and (21 < y1 or y1 == 0):
+            print('VOCÊ PERDEU y1 > y1d;;;')
+            x = 0
+            Jog1.Aposta()
+        else:
+            print('fudeu')
+
+    def hit_dealer(self):
+        Mao_dealer.append(random.choice(Deck))
+        print('O dealer deu hit e pegou a carta '+'\033[31m'+'{}\n'.format(Mao_dealer[-1])+'\033[0;0m')
+        Jog1.Check_Win()
+
+    def Jogo(self):
+        global x
+        global Mao_dealer
+        global Mao_player
+        Mao_player = []
+        Mao_dealer = []
+        Jog1.__init__()
+        print('Sua mão inicial é:\n' + '\033[31m'+'{}'.format(Mao_player)+'\033[0;0m')  # RECEBE DUAS CARTAS
+        Jog1.Conta_player()
+        Mao_dealer.append(random.choice(Deck))  # RECEBE UMA CARTA
+        Mao_dealer.append(random.choice(Deck))
+        print('\no dealer tem a carta\n'+'\033[31m'+'{}'.format(Mao_dealer[0])+'\033[0;0m'+'\n\n')
+        while True:
+            Ans = str(input('O que deseja fazer? ')).upper().strip()
+            if Ans == 'HELP':
+                print('Você pode:\n   hit\n   doubledown(dd)\n   surrender\n   stand\n\n')
+            elif Ans == 'HIT':
+                Mao_player.append(random.choice(Deck))
+                print('Agora, sua mão é '+'\033[31m'+'{}'.format(Mao_player)+'\033[0;0m')
+                Jog1.Conta_player()
+                print('\n')
+                if y > 21 and (y1 > 21 or y1 == 0):
+                    print('VOCÊ PERDEU')
+                    x = 0
+                    Jog1.Aposta()
+            elif Ans == 'DD':
+                if len(Mao_player) == 2:
+                    Jog1.Double_Down()
+                    Jog1.Check_Win()
+                else:
+                    print('Você não pode fazer isso com mais de duas cartas\n')
+            elif Ans == 'SURRENDER':
+                Jog1.Surrender()
+            elif Ans == 'STAND':
+                Jog1.Stand()
+                Jog1.Check_Win()
+
+
+Jog1 = Player1()
+Jog1.Aposta()
